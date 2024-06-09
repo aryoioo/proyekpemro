@@ -19,6 +19,9 @@ jobs:
     - name: Check out repository
       uses: actions/checkout@v4
 
+    - name: Copy .env
+      run: cp .env.example .env
+
     - name: Install Composer dependencies
       run: composer install --prefer-dist --no-progress --no-suggest --no-interaction
 
@@ -30,6 +33,7 @@ jobs:
 
     - name: Create SQLite database
       run: |
+        mkdir -p database
         touch database/database.sqlite
 
     - name: Set up environment variables
