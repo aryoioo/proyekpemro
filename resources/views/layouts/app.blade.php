@@ -62,11 +62,11 @@
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
             aria-expanded="true" aria-controls="collapseTwo">
             <i class="fas fa-fw fa-cog"></i>
-            <span>Management Alat</span>
+            <span>Managemen Alat</span>
         </a>
         <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <h6 class="collapse-header">Manajement Alat</h6>
+                <h6 class="collapse-header">Manajemen Alat</h6>
 
                 <a class="collapse-item" href="{{route('device')}}">Daftar Alat</a>
                 <a class="collapse-item" href="{{route('adddevice')}}">Tambah Alat</a>
@@ -80,7 +80,7 @@
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
             aria-expanded="true" aria-controls="collapseUtilities">
             <i class="fas fa-fw fa-wrench"></i>
-            <span>Manajement Admin</span>
+            <span>Manajemen Admin</span>
         </a>
         <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
             data-parent="#accordionSidebar">
