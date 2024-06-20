@@ -1,4 +1,4 @@
-name: Laravel CI
+name: Laravel
 
 on:
   push:
@@ -8,42 +8,54 @@ on:
 
 jobs:
   laravel-tests:
+
     runs-on: ubuntu-latest
 
     steps:
-    - name: Set up PHP
+    - uses: actions/checkout@v4
+
+    - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '7.4'
-
-    - name: Check out repository
-      uses: actions/checkout@v4
+        php-version: '7.4.33'
 
     - name: Copy .env
-      run: cp .env.example .env
+      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
 
-    - name: Install Composer dependencies
-      run: composer install --prefer-dist --no-progress --no-suggest --no-interaction
+    - name: Show .env file
+      run: cat .env
 
-    - name: Generate application key
+    - name: Install Dependencies
+      run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+
+    - name: Generate key
       run: php artisan key:generate
 
-    - name: Set directory permissions
+    - name: Directory Permissions
       run: chmod -R 777 storage bootstrap/cache
 
-    - name: Create SQLite database
+    - name: Create Database
       run: |
         mkdir -p database
         touch database/database.sqlite
 
-    - name: Set up environment variables
-      run: echo "DB_CONNECTION=sqlite" >> .env
+    - name: Show Database Directory
+      run: ls -la database
 
-    - name: Run migrations
+    - name: Import SQL File into SQLite
+      run: sqlite3 database/database.sqlite < database/database.sql
+
+    - name: Migrate Database Tables
       run: php artisan migrate --force
 
-    - name: Check migration status
-      run: php artisan migrate:status
+    - name: Migrate Specific Migrations
+      run: |
+        php artisan migrate --force --path=/database/migrations/2022_10_16_071643_create_pasiens_table.php
+        php artisan migrate --force --path=/database/migrations/2022_10_15_054340_create_values_table.php
+        php artisan migrate --force --path=/database/migrations/2022_08_15_074729_create_sensors_table.php
 
-    - name: Run tests
+    - name: Execute tests (Unit and Feature tests) via PHPUnit/Pest
+      env:
+        DB_CONNECTION: sqlite
+        DB_DATABASE: database/database.sqlite
       run: php artisan test
