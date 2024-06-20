@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -13,10 +14,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', [App\Http\Controllers\View::class, 'index'])->name('index');
-Route::get('/get', [App\Http\Controllers\View::class, 'get'])->name('get');
+Route::get('/', [App\Http\Controllers\SensorController::class, 'index'])->name('index');
+Route::get('/get', [App\Http\Controllers\SensorController::class, 'get'])->name('get');
 Auth::routes();
-Route::get('/sensor/{idAlat}/{dropsPerMinutes}/{kapasitas}/{status}', [App\Http\Controllers\View::class, 'sensor']);
+Route::get('/sensor/{idAlat}/{dropsPerMinutes}/{kapasitas}/{status}', [App\Http\Controllers\SensorController::class, 'sensor']);
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->middleware('auth')->name('home');
 Route::get('/regist', [App\Http\Controllers\Regist::class, 'index'])->name('regist');
 Route::post('/register', [App\Http\Controllers\Regist::class, 'create'])->name('register');
@@ -26,6 +27,3 @@ Route::post('update', [App\Http\Controllers\UpdateController::class, 'update']);
 Route::post('adddevices', [App\Http\Controllers\AddDeviceController::class, 'post']);
 Route::get('/device', [App\Http\Controllers\AddDeviceController::class, 'list'])->middleware('auth')->name('device');
 Route::get('deletedevice/{id}', [App\Http\Controllers\UpdateController::class, 'delete']);
-
-
-

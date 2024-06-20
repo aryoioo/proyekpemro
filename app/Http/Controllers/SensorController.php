@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Value;
 use App\Models\Pasien;
 
-class View extends Controller
+class SensorController extends Controller
 {
     public function sensor($idAlat, $dropsPerMinutes, $kapasitas, $status)
     {
