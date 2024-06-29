@@ -1,46 +1,21 @@
-name: Deploy to Hosting
-
 on:
   push:
-    branches:
-      - main
-
+    branches: [ main ]
+name: 🚀 Deploy website on push
 jobs:
-  deploy:
+  web-deploy:
+    name: 🎉 Auto Deploy
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+    - name: 🚚 Get latest code
+      uses: actions/checkout@v2.3.2
 
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
+    - name: 📂 Sync files
+      uses: burnett01/rsync-deployments@4.1
       with:
-        php-version: '7.4'
-
-    - name: Install Dependencies
-      run: composer install --prefer-dist --no-dev --no-scripts --no-progress --no-suggest
-
-    - name: Deploy to Hosting
-      env:
-        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-        SERVER_USER: smig5223
-        SERVER_DOMAIN: 203.175.9.150
-        SERVER_PATH: /home/smig5223/public_html/smic
-      run: |
-        echo "${SSH_PRIVATE_KEY}" > deploy_key
-        chmod 600 deploy_key
-        ssh -i deploy_key -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_DOMAIN << 'EOF'
-          cd $SERVER_PATH
-          git pull origin main
-          composer install --prefer-dist --no-dev --no-scripts --no-progress --no-suggest
-          php artisan migrate --force
-          php artisan config:cache
-          php artisan route:cache
-          php artisan view:cache
-          php artisan storage:link
-          sudo systemctl restart php-fpm
-          sudo systemctl restart nginx
-        EOF
-        rm deploy_key
+        switches: -avzr --delete --exclude=".git" --exclude=".github"
+        path: /
+        remote_path: ${{ secrets.SERVER_PATH }}
+        remote_host: ${{ secrets.SERVER_DOMAIN }}
+        remote_user: ${{ secrets.SERVER_USER }}
+        remote_key: ${{ secrets.SSHH_PRIVATE_KEY }}
