@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost:3306
--- Generation Time: Jun 20, 2024 at 09:27 AM
--- Server version: 8.0.30
--- PHP Version: 7.4.33
+-- Host: 127.0.0.1
+-- Generation Time: Jun 29, 2024 at 07:58 PM
+-- Server version: 10.4.28-MariaDB
+-- PHP Version: 8.0.28
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `sifis`
+-- Database: `testing`
 --
 
 -- --------------------------------------------------------
@@ -28,13 +28,13 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `failed_jobs` (
-  `id` bigint UNSIGNED NOT NULL,
-  `uuid` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `connection` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `queue` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `payload` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `exception` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `failed_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `uuid` varchar(255) NOT NULL,
+  `connection` text NOT NULL,
+  `queue` text NOT NULL,
+  `payload` longtext NOT NULL,
+  `exception` longtext NOT NULL,
+  `failed_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -44,9 +44,9 @@ CREATE TABLE `failed_jobs` (
 --
 
 CREATE TABLE `migrations` (
-  `id` int UNSIGNED NOT NULL,
-  `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `batch` int NOT NULL
+  `id` int(10) UNSIGNED NOT NULL,
+  `migration` varchar(255) NOT NULL,
+  `batch` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -54,12 +54,13 @@ CREATE TABLE `migrations` (
 --
 
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
-(1, '2014_10_12_000000_create_users_table', 1),
-(2, '2014_10_12_100000_create_password_resets_table', 1),
-(3, '2019_08_19_000000_create_failed_jobs_table', 1),
-(4, '2019_12_14_000001_create_personal_access_tokens_table', 1),
-(5, '2022_08_15_074729_create_sensors_table', 1),
-(6, '2022_10_16_071643_create_pasiens_table', 2);
+(8, '2014_10_12_000000_create_users_table', 1),
+(9, '2014_10_12_100000_create_password_resets_table', 1),
+(10, '2019_08_19_000000_create_failed_jobs_table', 1),
+(11, '2019_12_14_000001_create_personal_access_tokens_table', 1),
+(12, '2022_08_15_074729_create_sensors_table', 1),
+(13, '2022_10_14_071643_create_pasiens_table', 1),
+(14, '2022_10_15_054340_create_values_table', 1);
 
 -- --------------------------------------------------------
 
@@ -68,11 +69,11 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 --
 
 CREATE TABLE `pasiens` (
-  `id` int UNSIGNED NOT NULL,
-  `alat` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `nama` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `ruang` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `status` int NOT NULL,
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `alat` varchar(255) NOT NULL,
+  `nama` varchar(255) DEFAULT NULL,
+  `ruang` varchar(255) DEFAULT NULL,
+  `status` int(11) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -82,12 +83,8 @@ CREATE TABLE `pasiens` (
 --
 
 INSERT INTO `pasiens` (`id`, `alat`, `nama`, `ruang`, `status`, `created_at`, `updated_at`) VALUES
-(1, '11111111', 'Mardiatun', '1000', 0, '2023-06-21 05:20:02', '2023-06-21 05:26:42'),
-(2, '11111111', 'mar', '12', 0, '2023-06-21 05:26:42', '2023-06-22 03:14:18'),
-(3, '11111111', 'krisna', '4.5.7', 0, '2023-06-22 03:14:18', '2023-06-22 09:00:04'),
-(4, '11111111', 'krisna a', '2.3.1', 0, '2023-06-22 09:00:04', '2023-06-24 08:24:26'),
-(5, '11111111', 'Test', '1', 0, '2023-06-24 08:24:26', '2023-06-24 09:48:34'),
-(6, '11111111', '00', '123', 1, '2023-06-24 09:48:34', '2023-06-24 09:48:34');
+(1, '11111111', 'Krisna', '111', 0, NULL, NULL),
+(2, '22222222', 'Kris', '122', 1, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -96,8 +93,8 @@ INSERT INTO `pasiens` (`id`, `alat`, `nama`, `ruang`, `status`, `created_at`, `u
 --
 
 CREATE TABLE `password_resets` (
-  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `token` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `token` varchar(255) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -108,12 +105,12 @@ CREATE TABLE `password_resets` (
 --
 
 CREATE TABLE `personal_access_tokens` (
-  `id` bigint UNSIGNED NOT NULL,
-  `tokenable_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `tokenable_id` bigint UNSIGNED NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `token` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `abilities` text COLLATE utf8mb4_unicode_ci,
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `tokenable_type` varchar(255) NOT NULL,
+  `tokenable_id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `token` varchar(64) NOT NULL,
+  `abilities` text DEFAULT NULL,
   `last_used_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -126,18 +123,11 @@ CREATE TABLE `personal_access_tokens` (
 --
 
 CREATE TABLE `sensors` (
-  `id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `status` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id` varchar(255) NOT NULL,
+  `status` varchar(255) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `sensors`
---
-
-INSERT INTO `sensors` (`id`, `status`, `created_at`, `updated_at`) VALUES
-('11111111', 'berhasil ditambah', '2023-06-21 05:19:12', '2023-06-21 05:19:12');
 
 -- --------------------------------------------------------
 
@@ -146,23 +136,15 @@ INSERT INTO `sensors` (`id`, `status`, `created_at`, `updated_at`) VALUES
 --
 
 CREATE TABLE `users` (
-  `id` bigint UNSIGNED NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
   `email_verified_at` timestamp NULL DEFAULT NULL,
-  `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `remember_token` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `password` varchar(255) NOT NULL,
+  `remember_token` varchar(100) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `users`
---
-
-INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`) VALUES
-(1, 'bas', 'baskorogg@gmail.com', NULL, '$2y$10$AphW2cA255tVNSWZnGhb5uhdJJ0ZYu7/rZWUZdppwWeRxSX1LnVI6', NULL, NULL, NULL),
-(2, 'permata indah', 'permataindah@gmail.com', NULL, '$2y$10$MfveiodmQ0RkExmVNLvQXudlaOZh1nmFqw8Hef40tvHtV8TWFPa36', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -171,14 +153,14 @@ INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `re
 --
 
 CREATE TABLE `values` (
-  `id` int UNSIGNED NOT NULL,
-  `idPasien` int UNSIGNED NOT NULL,
-  `tpm` int DEFAULT NULL,
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `tpm` int(11) DEFAULT NULL,
   `kapasitas` decimal(8,2) DEFAULT NULL,
   `prediksi` decimal(8,2) DEFAULT NULL,
-  `status` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` varchar(255) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `IdPasien` bigint(20) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -202,8 +184,7 @@ ALTER TABLE `migrations`
 -- Indexes for table `pasiens`
 --
 ALTER TABLE `pasiens`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `pasiens_alat_foreign` (`alat`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `password_resets`
@@ -236,7 +217,8 @@ ALTER TABLE `users`
 -- Indexes for table `values`
 --
 ALTER TABLE `values`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `values_idpasien_foreign` (`IdPasien`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -246,47 +228,47 @@ ALTER TABLE `values`
 -- AUTO_INCREMENT for table `failed_jobs`
 --
 ALTER TABLE `failed_jobs`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `pasiens`
 --
 ALTER TABLE `pasiens`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `personal_access_tokens`
 --
 ALTER TABLE `personal_access_tokens`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `values`
 --
 ALTER TABLE `values`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- Constraints for dumped tables
 --
 
 --
--- Constraints for table `pasiens`
+-- Constraints for table `values`
 --
-ALTER TABLE `pasiens`
-  ADD CONSTRAINT `pasiens_alat_foreign` FOREIGN KEY (`alat`) REFERENCES `sensors` (`id`) ON DELETE CASCADE;
+ALTER TABLE `values`
+  ADD CONSTRAINT `values_idpasien_foreign` FOREIGN KEY (`IdPasien`) REFERENCES `pasiens` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
