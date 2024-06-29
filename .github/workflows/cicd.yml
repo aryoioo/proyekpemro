@@ -84,8 +84,10 @@ jobs:
         SERVER_USER: ${{ secrets.SERVER_USER }}
         SERVER_PATH: ${{ secrets.SERVER_PATH }}
       run: |
-        ssh -i $DEPLOY_KEY -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP << 'EOF'
-          cd $SERVER_PATH
+        echo "${{ secrets.DEPLOY_KEY }}" > deploy_key
+        chmod 600 deploy_key
+        ssh -i deploy_key -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} <<EOF
+          cd ${{ secrets.SERVER_PATH }}
           git pull origin main
           composer install --prefer-dist --no-dev --no-scripts --no-progress --no-suggest
           php artisan migrate --force
@@ -95,4 +97,5 @@ jobs:
           php artisan storage:link
           sudo systemctl restart php-fpm
           sudo systemctl restart nginx
-        EOF
+EOF
+        rm deploy_key
