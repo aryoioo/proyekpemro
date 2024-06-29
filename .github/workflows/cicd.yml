@@ -1,15 +1,13 @@
-name: CI/CD Pipeline
+name: Laravel CI/CD
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main" ]
   pull_request:
-    branches:
-      - main
+    branches: [ "main" ]
 
 jobs:
-  test:
+  laravel-tests:
     runs-on: ubuntu-latest
 
     services:
@@ -27,75 +25,74 @@ jobs:
           --health-retries=3
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - uses: actions/checkout@v4
 
-      - name: Set up PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: 7.4
-          extensions: mbstring, exif, pcntl, bcmath, intl
-          ini-values: post_max_size=256M, upload_max_filesize=256M, max_execution_time=300
-          coverage: xdebug
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '7.4.33'
 
-      - name: Install dependencies
-        run: composer install --prefer-dist --no-progress --no-suggest --no-interaction
+    - name: Copy .env
+      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
 
-      - name: Copy .env.example to .env
-        run: cp .env.example .env
+    - name: Show .env file
+      run: cat .env
 
-      - name: Generate application key
-        run: php artisan key:generate
+    - name: Install Dependencies
+      run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
 
-      - name: Configure database
-        run: |
-          php artisan config:cache
-          php artisan migrate --env=testing --force
-        env:
-          DB_CONNECTION: mysql
-          DB_DATABASE: test_db
-          DB_USERNAME: root
-          DB_PASSWORD: root
-          DB_HOST: 127.0.0.1
+    - name: Generate key
+      run: php artisan key:generate
 
-      - name: Run tests
-        run: vendor/bin/phpunit --testdox
+    - name: Configure Database
+      run: |
+        php artisan config:cache
+        php artisan migrate --force
+      env:
+        DB_CONNECTION: mysql
+        DB_DATABASE: test_db
+        DB_USERNAME: root
+        DB_PASSWORD: root
+        DB_HOST: 127.0.0.1
+
+    - name: Give execute permission to phpunit
+      run: chmod +x vendor/bin/phpunit
+
+    - name: Run Tests
+      run: vendor/bin/phpunit --testdox
 
   deploy:
     runs-on: ubuntu-latest
-    needs: test
+    needs: laravel-tests
     if: github.ref == 'refs/heads/main'
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - uses: actions/checkout@v4
 
-      - name: Set up PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: 7.4
-          extensions: mbstring, exif, pcntl, bcmath, intl
-          ini-values: post_max_size=256M, upload_max_filesize=256M, max_execution_time=300
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '7.4.33'
 
-      - name: Install dependencies
-        run: composer install --prefer-dist --no-progress --no-suggest --no-interaction --no-dev
+    - name: Install Dependencies
+      run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist --no-dev
 
-      - name: Deploy to Production
-        env:
-          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
-          SERVER_IP: ${{ secrets.SERVER_IP }}
-          SERVER_USER: ${{ secrets.SERVER_USER }}
-          SERVER_PATH: ${{ secrets.SERVER_PATH }}
-        run: |
-          ssh -i $DEPLOY_KEY -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP << 'EOF'
-            cd $SERVER_PATH
-            git pull origin main
-            composer install --prefer-dist --no-dev --no-scripts --no-progress --no-suggest
-            php artisan migrate --force
-            php artisan config:cache
-            php artisan route:cache
-            php artisan view:cache
-            php artisan storage:link
-            sudo systemctl restart php-fpm
-            sudo systemctl restart nginx
-          EOF
+    - name: Deploy to Production
+      env:
+        DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+        SERVER_IP: ${{ secrets.SERVER_IP }}
+        SERVER_USER: ${{ secrets.SERVER_USER }}
+        SERVER_PATH: ${{ secrets.SERVER_PATH }}
+      run: |
+        ssh -i $DEPLOY_KEY -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP << 'EOF'
+          cd $SERVER_PATH
+          git pull origin main
+          composer install --prefer-dist --no-dev --no-scripts --no-progress --no-suggest
+          php artisan migrate --force
+          php artisan config:cache
+          php artisan route:cache
+          php artisan view:cache
+          php artisan storage:link
+          sudo systemctl restart php-fpm
+          sudo systemctl restart nginx
+        EOF
