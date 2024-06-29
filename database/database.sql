@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 29, 2024 at 07:58 PM
+-- Generation Time: Jun 29, 2024 at 08:01 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.0.28
 
@@ -77,14 +77,6 @@ CREATE TABLE `pasiens` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `pasiens`
---
-
-INSERT INTO `pasiens` (`id`, `alat`, `nama`, `ruang`, `status`, `created_at`, `updated_at`) VALUES
-(1, '11111111', 'Krisna', '111', 0, NULL, NULL),
-(2, '22222222', 'Kris', '122', 1, NULL, NULL);
 
 -- --------------------------------------------------------
 
