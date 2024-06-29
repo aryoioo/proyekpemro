@@ -79,7 +79,7 @@ jobs:
 
     - name: Deploy to Production
       env:
-        DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+        DEPLOY_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         SERVER_DOMAIN: ${{ secrets.SERVER_DOMAIN }}
         SERVER_USER: ${{ secrets.SERVER_USER }}
         SERVER_PATH: ${{ secrets.SERVER_PATH }}
