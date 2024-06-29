@@ -80,13 +80,13 @@ jobs:
     - name: Deploy to Production
       env:
         DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
-        SERVER_IP: ${{ secrets.SERVER_DOMAIN }}
+        SERVER_DOMAIN: ${{ secrets.SERVER_DOMAIN }}
         SERVER_USER: ${{ secrets.SERVER_USER }}
         SERVER_PATH: ${{ secrets.SERVER_PATH }}
       run: |
         echo "${{ secrets.DEPLOY_KEY }}" > deploy_key
         chmod 600 deploy_key
-        ssh -i deploy_key -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+        ssh -i deploy_key -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_DOMAIN }} << 'EOF'
           cd ${{ secrets.SERVER_PATH }}
           git pull origin main
           composer install --prefer-dist --no-dev --no-scripts --no-progress --no-suggest
