@@ -1,101 +1,22 @@
-name: CI/CD Pipeline
-
 on:
   push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-
+    branches: [ main ]
+name: 🚀 Deploy website on push
 jobs:
-  test:
+  web-deploy:
+    name: 🎉 Auto Deploy
     runs-on: ubuntu-latest
-
-    services:
-      mysql:
-        image: mysql:5.7
-        env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: test_db
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping --silent"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: 🚚 Get latest code
+      uses: actions/checkout@v2.3.2
 
-      - name: Set up PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: 7.4
-          extensions: mbstring, exif, pcntl, bcmath, intl
-          ini-values: post_max_size=256M, upload_max_filesize=256M, max_execution_time=300
-          coverage: xdebug
-
-      - name: Install dependencies
-        run: composer install --prefer-dist --no-progress --no-suggest --no-interaction
-
-      - name: Copy .env.example to .env
-        run: cp .env.example .env
-
-      - name: Generate application key
-        run: php artisan key:generate
-
-      - name: Configure database
-        run: |
-          php artisan config:cache
-          php artisan migrate --env=testing --force
-        env:
-          DB_CONNECTION: mysql
-          DB_DATABASE: test_db
-          DB_USERNAME: root
-          DB_PASSWORD: root
-          DB_HOST: 127.0.0.1
-
-      - name: Run tests
-        run: vendor/bin/phpunit --testdox
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: test
-    if: github.ref == 'refs/heads/main'
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Set up PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: 7.4
-          extensions: mbstring, exif, pcntl, bcmath, intl
-          ini-values: post_max_size=256M, upload_max_filesize=256M, max_execution_time=300
-
-      - name: Install dependencies
-        run: composer install --prefer-dist --no-progress --no-suggest --no-interaction --no-dev
-
-      - name: Deploy to Production
-        env:
-          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
-          SERVER_IP: ${{ secrets.SERVER_IP }}
-          SERVER_USER: ${{ secrets.SERVER_USER }}
-          SERVER_PATH: ${{ secrets.SERVER_PATH }}
-        run: |
-          ssh -i $DEPLOY_KEY -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP << 'EOF'
-            cd $SERVER_PATH
-            git pull origin main
-            composer install --prefer-dist --no-dev --no-scripts --no-progress --no-suggest
-            php artisan migrate --force
-            php artisan config:cache
-            php artisan route:cache
-            php artisan view:cache
-            php artisan storage:link
-            sudo systemctl restart php-fpm
-            sudo systemctl restart nginx
-          EOF
+    - name: 📂 Sync files
+      uses: burnett01/rsync-deployments@4.1
+      with:
+        switches: -avzr --delete --exclude=".git" --exclude=".github"
+        path: /
+        remote_path: ${{ secrets.SERVER_PATH }}
+        remote_host: ${{ secrets.SERVER_DOMAIN }}
+        remote_user: ${{ secrets.SERVER_USER }}
+        remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
+        remote_port: 2223 # Specify the port if it's different from the default port 22
